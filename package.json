@@ -1,0 +1,16 @@
+{
+  "name": "lighthouse-auditor",
+  "description": "",
+  "version": "0.1.0",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "lighthouse": "^2.7.0",
+    "serverless-plugin-chrome": "^1.0.0-55"
+  },
+  "devDependencies": {
+    "serverless-attach-managed-policy": "0.0.7"
+  }
+}

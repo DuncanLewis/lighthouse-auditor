@@ -1,0 +1,30 @@
+service: lighthouse-auditor
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: eu-west-1
+
+plugins:
+  - serverless-plugin-chrome
+  - serverless-attach-managed-policy
+
+custom:
+  chrome:
+      flags:
+        - --window-size=1680x1050
+        - --hide-scrollbars
+        - --ignore-certificate-errors
+        - --headless
+        - --disable-gpu
+        - --no-sandbox
+        - --homedir=/tmp/randompath0
+        - --single-process
+        - --data-path=/tmp/randompath1
+        - --disk-cache-dir=/tmp/randompath2
+
+functions:
+  auditor:
+    handler: handler.audit
+    timeout: 180
+    
