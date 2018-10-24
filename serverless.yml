@@ -2,7 +2,7 @@ service: lighthouse-auditor
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs6.10
   region: eu-west-1
 
 plugins:
@@ -27,4 +27,12 @@ functions:
   auditor:
     handler: handler.audit
     timeout: 180
-    
+    events:
+      - schedule:
+          name: lighthouse-audit-trigger
+          description: 'Audit the input target.'
+          rate: rate(5 minutes)
+          enabled: true
+          input:
+            target: https://www.bbc.com/
+            mobile: false

@@ -18,6 +18,7 @@ module.exports.audit = (event, context, callback, chrome) => {
         disableCpuThrottling: true,
         disableNetworkThrottling: true
     }
+    console.log(flags)
 
     // Initialize datadog metrics collection
     // ref: https://github.com/dbader/node-datadog-metrics#initialization
@@ -37,5 +38,7 @@ module.exports.audit = (event, context, callback, chrome) => {
         console.log('target: ' + results.url)
         console.log('total-time: ' + results.timing.total)
         console.log('score: ' + results.score)
+
+        return results.score
     })
 }
