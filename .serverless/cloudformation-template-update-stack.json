@@ -92,10 +92,10 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/lighthouse-auditor/dev/1540318459016-2018-10-23T18:14:19.016Z/lighthouse-auditor.zip"
+          "S3Key": "serverless/lighthouse-auditor/dev/1540643630527-2018-10-27T12:33:50.527Z/auditor.zip"
         },
         "FunctionName": "lighthouse-auditor-dev-auditor",
-        "Handler": "handler.audit",
+        "Handler": "audit/index.handler",
         "MemorySize": 1024,
         "Role": {
           "Fn::GetAtt": [
@@ -103,7 +103,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10",
+        "Runtime": "nodejs6.10",
         "Timeout": 180
       },
       "DependsOn": [
@@ -111,14 +111,86 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "AuditorLambdaVersionNbcfgnlUXk7bSxiGOsGwPDGBlx9yMSKkOsDBnWtvE": {
+    "AuditorLambdaVersionoW5LOeUUFCjfRaVdZX7q14H7hifT7QC5aW1150chBQ": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AuditorLambdaFunction"
         },
-        "CodeSha256": "GPfe6lOR3XIst7LjYkrRu/RBpIuXS1V8grkgsmU2xc0="
+        "CodeSha256": "hP8TS2OGS2KJZdUAj6d9Q04C5BDayEjLc4hIHZ5vM6A="
+      }
+    },
+    "AuditorEventsRuleSchedule1": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "ScheduleExpression": "rate(5 minutes)",
+        "State": "ENABLED",
+        "Name": "lighthouse-audit-trigger",
+        "Description": "Audit the input target.",
+        "Targets": [
+          {
+            "Input": "{\"target\":\"https://www.bbc.com/\",\"mobile\":false}",
+            "Arn": {
+              "Fn::GetAtt": [
+                "AuditorLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Id": "auditorSchedule"
+          }
+        ]
+      }
+    },
+    "AuditorLambdaPermissionEventsRuleSchedule1": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AuditorLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": {
+          "Fn::Join": [
+            "",
+            [
+              "events.",
+              {
+                "Ref": "AWS::URLSuffix"
+              }
+            ]
+          ]
+        },
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "AuditorEventsRuleSchedule1",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "AuditsTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "dev-auditsTable",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "url",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "url",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        }
       }
     }
   },
@@ -131,7 +203,7 @@
     "AuditorLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AuditorLambdaVersionNbcfgnlUXk7bSxiGOsGwPDGBlx9yMSKkOsDBnWtvE"
+        "Ref": "AuditorLambdaVersionoW5LOeUUFCjfRaVdZX7q14H7hifT7QC5aW1150chBQ"
       }
     }
   }
