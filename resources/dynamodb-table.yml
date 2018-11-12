@@ -2,12 +2,12 @@ Resources:
   AuditsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: ${self:custom.stage}-auditsTable
+      TableName: ${self:custom.tableName}
       AttributeDefinitions:
         - AttributeName: url
           AttributeType: S
       KeySchema:
-        - AttributeName: url
+        - AttributeName: userId
           KeyType: HASH
       # Set the capacity based on the stage
       ProvisionedThroughput:
