@@ -5,10 +5,10 @@
     "ServerlessDeploymentBucket": {
       "Type": "AWS::S3::Bucket"
     },
-    "AuditorLogGroup": {
+    "AuditLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/lighthouse-auditor-dev-auditor"
+        "LogGroupName": "/aws/lambda/lighthouse-auditor-dev-audit"
       }
     },
     "IamRoleLambdaExecution": {
@@ -52,7 +52,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/lighthouse-auditor-dev-auditor:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/lighthouse-auditor-dev-audit:*"
                     }
                   ]
                 },
@@ -63,9 +63,18 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/lighthouse-auditor-dev-auditor:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/lighthouse-auditor-dev-audit:*:*"
                     }
                   ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "lambda:InvokeFunction",
+                    "lambda:InvokeAsync",
+                    "dynamodb:*"
+                  ],
+                  "Resource": "*"
                 }
               ]
             }
@@ -85,17 +94,17 @@
         }
       }
     },
-    "AuditorLambdaFunction": {
+    "AuditLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/lighthouse-auditor/dev/1540318459016-2018-10-23T18:14:19.016Z/lighthouse-auditor.zip"
+          "S3Key": "serverless/lighthouse-auditor/dev/1543185904202-2018-11-25T22:45:04.202Z/lighthouse-auditor.zip"
         },
-        "FunctionName": "lighthouse-auditor-dev-auditor",
-        "Handler": "handler.audit",
+        "FunctionName": "lighthouse-auditor-dev-audit",
+        "Handler": "audit/index.handler",
         "MemorySize": 1024,
         "Role": {
           "Fn::GetAtt": [
@@ -103,22 +112,44 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs8.10",
+        "Runtime": "nodejs6.10",
         "Timeout": 180
       },
       "DependsOn": [
-        "AuditorLogGroup",
+        "AuditLogGroup",
         "IamRoleLambdaExecution"
       ]
     },
-    "AuditorLambdaVersionNbcfgnlUXk7bSxiGOsGwPDGBlx9yMSKkOsDBnWtvE": {
+    "AuditLambdaVersionIsNaapzLbihcCtW0UcNqg7dvxzwxyMZpp9j7DIhTNdk": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "AuditorLambdaFunction"
+          "Ref": "AuditLambdaFunction"
         },
-        "CodeSha256": "GPfe6lOR3XIst7LjYkrRu/RBpIuXS1V8grkgsmU2xc0="
+        "CodeSha256": "PPb0WT+j7kD5stvsgh8JiyfwtJSVWeBglUVILlxfIdA="
+      }
+    },
+    "AuditsTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "dev-auditsTable",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "url",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "url",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        }
       }
     }
   },
@@ -128,10 +159,10 @@
         "Ref": "ServerlessDeploymentBucket"
       }
     },
-    "AuditorLambdaFunctionQualifiedArn": {
+    "AuditLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AuditorLambdaVersionNbcfgnlUXk7bSxiGOsGwPDGBlx9yMSKkOsDBnWtvE"
+        "Ref": "AuditLambdaVersionIsNaapzLbihcCtW0UcNqg7dvxzwxyMZpp9j7DIhTNdk"
       }
     }
   }

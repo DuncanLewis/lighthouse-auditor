@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "lighthouse": "^2.7.0",
+    "serverless": "^1.33.2",
     "serverless-plugin-chrome": "1.0.0-31"
   },
   "devDependencies": {
