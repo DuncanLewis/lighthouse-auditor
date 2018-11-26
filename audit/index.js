@@ -1,5 +1,6 @@
 const lighthouse = require('lighthouse')
 const AWS = require('aws-sdk')
+const uuidv5 = require('uuid/v5')
 
 module.exports.handler = (event, context, callback, chrome) => {
     console.log(event)
@@ -20,16 +21,24 @@ module.exports.handler = (event, context, callback, chrome) => {
         ddb = new AWS.DynamoDB({
             apiVersion: '2012-10-08'
         });
+
+        const date = new Date();
     
         var params = {
             TableName: 'dev-auditsTable',
             Item: {
+                'id': {
+                    S: uuidv5(results.url, uuidv5.URL)
+                },
                 'url': {
                     S: results.url
                 },
                 'score': {
                     S: results.score.toString()
                 },
+                'time': {
+                    N: date.getTime().toString()
+                }
             }
         };
 

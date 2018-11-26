@@ -120,7 +120,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/lighthouse-auditor/dev/1543185904202-2018-11-25T22:45:04.202Z/lighthouse-auditor.zip"
+                "S3Key": "serverless/lighthouse-auditor/dev/1543272807581-2018-11-26T22:53:27.581Z/lighthouse-auditor.zip"
               },
               "FunctionName": "lighthouse-auditor-dev-audit",
               "Handler": "audit/index.handler",
@@ -139,14 +139,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "AuditLambdaVersionIsNaapzLbihcCtW0UcNqg7dvxzwxyMZpp9j7DIhTNdk": {
+          "AuditLambdaVersionugTXY8ABuwxf7oMVjJO99DjHFa2k8I7H2naNfQPg": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AuditLambdaFunction"
               },
-              "CodeSha256": "PPb0WT+j7kD5stvsgh8JiyfwtJSVWeBglUVILlxfIdA="
+              "CodeSha256": "hqCr0STUouVSDYSU7KI9Jsk1YwWbm1NclU1jUjMLbMk="
             }
           },
           "AuditsTable": {
@@ -155,13 +155,13 @@
               "TableName": "dev-auditsTable",
               "AttributeDefinitions": [
                 {
-                  "AttributeName": "url",
+                  "AttributeName": "id",
                   "AttributeType": "S"
                 }
               ],
               "KeySchema": [
                 {
-                  "AttributeName": "url",
+                  "AttributeName": "id",
                   "KeyType": "HASH"
                 }
               ],
@@ -181,7 +181,7 @@
           "AuditLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AuditLambdaVersionIsNaapzLbihcCtW0UcNqg7dvxzwxyMZpp9j7DIhTNdk"
+              "Ref": "AuditLambdaVersionugTXY8ABuwxf7oMVjJO99DjHFa2k8I7H2naNfQPg"
             }
           }
         }
@@ -246,13 +246,13 @@
             "TableName": "dev-auditsTable",
             "AttributeDefinitions": [
               {
-                "AttributeName": "url",
+                "AttributeName": "id",
                 "AttributeType": "S"
               }
             ],
             "KeySchema": [
               {
-                "AttributeName": "url",
+                "AttributeName": "id",
                 "KeyType": "HASH"
               }
             ],
@@ -268,7 +268,7 @@
     "artifact": "/Users/duncan/workspace/lighthouse-auditor/.build/.serverless/lighthouse-auditor.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/lighthouse-auditor/dev/1543185904202-2018-11-25T22:45:04.202Z",
+    "artifactDirectoryName": "serverless/lighthouse-auditor/dev/1543272807581-2018-11-26T22:53:27.581Z",
     "artifact": "lighthouse-auditor.zip"
   }
 }

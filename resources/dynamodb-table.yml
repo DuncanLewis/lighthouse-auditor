@@ -4,10 +4,10 @@ Resources:
     Properties:
       TableName: ${self:custom.tableName}
       AttributeDefinitions:
-        - AttributeName: url
+        - AttributeName: id
           AttributeType: S
       KeySchema:
-        - AttributeName: url
+        - AttributeName: id
           KeyType: HASH
       # Set the capacity based on the stage
       ProvisionedThroughput:
