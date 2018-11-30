@@ -1,6 +1,6 @@
 const lighthouse = require('lighthouse')
 const AWS = require('aws-sdk')
-const uuidv5 = require('uuid/v5')
+const uuidv4 = require('uuid/v4')
 
 module.exports.handler = (event, context, callback, chrome) => {
     console.log(event)
@@ -28,7 +28,7 @@ module.exports.handler = (event, context, callback, chrome) => {
             TableName: 'dev-auditsTable',
             Item: {
                 'id': {
-                    S: uuidv5(results.url, uuidv5.URL)
+                    S: uuidv4()
                 },
                 'url': {
                     S: results.url

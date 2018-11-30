@@ -120,7 +120,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/lighthouse-auditor/dev/1543272807581-2018-11-26T22:53:27.581Z/lighthouse-auditor.zip"
+                "S3Key": "serverless/lighthouse-auditor/dev/1543611837191-2018-11-30T21:03:57.191Z/lighthouse-auditor.zip"
               },
               "FunctionName": "lighthouse-auditor-dev-audit",
               "Handler": "audit/index.handler",
@@ -132,21 +132,68 @@
                 ]
               },
               "Runtime": "nodejs6.10",
-              "Timeout": 180
+              "Timeout": 60
             },
             "DependsOn": [
               "AuditLogGroup",
               "IamRoleLambdaExecution"
             ]
           },
-          "AuditLambdaVersionugTXY8ABuwxf7oMVjJO99DjHFa2k8I7H2naNfQPg": {
+          "AuditLambdaVersion3wJ8Ty7WsMkM5GUQ6HjCmKtMQWn6vAK0JW9kmyol8E": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AuditLambdaFunction"
               },
-              "CodeSha256": "hqCr0STUouVSDYSU7KI9Jsk1YwWbm1NclU1jUjMLbMk="
+              "CodeSha256": "sdk8Pesc712nHk1SE/Su4OLZ/WsfTbuVkb2h5FApPC0="
+            }
+          },
+          "AuditEventsRuleSchedule1": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+              "ScheduleExpression": "rate(1 day)",
+              "State": "ENABLED",
+              "Targets": [
+                {
+                  "Arn": {
+                    "Fn::GetAtt": [
+                      "AuditLambdaFunction",
+                      "Arn"
+                    ]
+                  },
+                  "Id": "auditSchedule"
+                }
+              ]
+            }
+          },
+          "AuditLambdaPermissionEventsRuleSchedule1": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "AuditLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "events.",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    }
+                  ]
+                ]
+              },
+              "SourceArn": {
+                "Fn::GetAtt": [
+                  "AuditEventsRuleSchedule1",
+                  "Arn"
+                ]
+              }
             }
           },
           "AuditsTable": {
@@ -181,7 +228,7 @@
           "AuditLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AuditLambdaVersionugTXY8ABuwxf7oMVjJO99DjHFa2k8I7H2naNfQPg"
+              "Ref": "AuditLambdaVersion3wJ8Ty7WsMkM5GUQ6HjCmKtMQWn6vAK0JW9kmyol8E"
             }
           }
         }
@@ -229,8 +276,14 @@
     "functions": {
       "audit": {
         "handler": "audit/index.handler",
-        "timeout": 180,
-        "events": [],
+        "timeout": 60,
+        "events": [
+          {
+            "schedule": {
+              "rate": "rate(1 day)"
+            }
+          }
+        ],
         "name": "lighthouse-auditor-dev-audit",
         "package": {},
         "memory": 1024,
@@ -268,7 +321,7 @@
     "artifact": "/Users/duncan/workspace/lighthouse-auditor/.build/.serverless/lighthouse-auditor.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/lighthouse-auditor/dev/1543272807581-2018-11-26T22:53:27.581Z",
+    "artifactDirectoryName": "serverless/lighthouse-auditor/dev/1543611837191-2018-11-30T21:03:57.191Z",
     "artifact": "lighthouse-auditor.zip"
   }
 }
