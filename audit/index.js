@@ -1,6 +1,7 @@
 const lighthouse = require('lighthouse')
 const AWS = require('aws-sdk')
 const uuidv4 = require('uuid/v4')
+const uuidv5 = require('uuid/v5');
 
 module.exports.handler = (event, context, callback, chrome) => {
     console.log(event)
@@ -22,10 +23,22 @@ module.exports.handler = (event, context, callback, chrome) => {
             apiVersion: '2012-10-08'
         });
 
+        s3 = new AWS.S3();
+
+        const s3key = `${uuidv5.URL(event.target)}/${uuidv4}`
+        const bucketName = 'lighthouse-auditor-dev-resultsbucket-b04a5n6lygnz'
+
+        s3.putObject({
+            Bucket: bucketName,
+            Key: s3key,
+            Body: JSON.stringify(results),
+            ContentType: 'application/json'
+        });
+        
         const date = new Date();
     
         var params = {
-            TableName: 'dev-auditsTable',
+            TableName: 'lighthouse-auditor--dev-auditsTable',
             Item: {
                 'id': {
                     S: uuidv4()
@@ -35,6 +48,9 @@ module.exports.handler = (event, context, callback, chrome) => {
                 },
                 'score': {
                     S: results.score.toString()
+                },
+                's3Key': {
+                    S: `s3://${bucketName}/${s3key}`
                 },
                 'time': {
                     N: date.getTime().toString()

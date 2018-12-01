@@ -1,0 +1,9 @@
+Resources:
+  ResultsBucket:
+    Type: AWS::S3::Bucket
+
+# Print out the name of the bucket that is created
+Outputs:
+  ResultsBucketName:
+    Value:
+      Ref: ResultsBucket
