@@ -11,6 +11,12 @@
         "LogGroupName": "/aws/lambda/lighthouse-auditor-dev-audit"
       }
     },
+    "AuditTriggerLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/lighthouse-auditor-dev-auditTrigger"
+      }
+    },
     "IamRoleLambdaExecution": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -53,6 +59,9 @@
                   "Resource": [
                     {
                       "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/lighthouse-auditor-dev-audit:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/lighthouse-auditor-dev-auditTrigger:*"
                     }
                   ]
                 },
@@ -64,6 +73,9 @@
                   "Resource": [
                     {
                       "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/lighthouse-auditor-dev-audit:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/lighthouse-auditor-dev-auditTrigger:*:*"
                     }
                   ]
                 },
@@ -76,6 +88,22 @@
                     "s3:PutObject"
                   ],
                   "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "AuditQueue",
+                        "Arn"
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -102,7 +130,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/lighthouse-auditor/dev/1543710685767-2018-12-02T00:31:25.767Z/lighthouse-auditor.zip"
+          "S3Key": "serverless/lighthouse-auditor/dev/1543769117970-2018-12-02T16:45:17.970Z/lighthouse-auditor.zip"
         },
         "FunctionName": "lighthouse-auditor-dev-audit",
         "Handler": "audit/index.handler",
@@ -121,62 +149,70 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "AuditLambdaVersionbCaog2dBl6nrOP9p3zOEtfEQLe4mqju1ULPzYN2QfM": {
+    "AuditLambdaVersioniKBekwWxat8TnR3PxaIvdOYqj7aMBMnBe7X6opyow": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AuditLambdaFunction"
         },
-        "CodeSha256": "mbT66dkMCT7Rv0H8gTiW/abWbsiSsk6PlVXFsVJuzqo="
+        "CodeSha256": "2+WUu4TBjMQ9TN8YHnP0JQrb65ryMq6fTgVKOCVjh+A="
       }
     },
-    "AuditEventsRuleSchedule1": {
-      "Type": "AWS::Events::Rule",
+    "AuditTriggerLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
       "Properties": {
-        "ScheduleExpression": "rate(1 day)",
-        "State": "ENABLED",
-        "Targets": [
-          {
-            "Input": "{\"target\":\"https://www.bbc.com/bitesize\"}",
-            "Arn": {
-              "Fn::GetAtt": [
-                "AuditLambdaFunction",
-                "Arn"
-              ]
-            },
-            "Id": "auditSchedule"
-          }
-        ]
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/lighthouse-auditor/dev/1543769117970-2018-12-02T16:45:17.970Z/lighthouse-auditor.zip"
+        },
+        "FunctionName": "lighthouse-auditor-dev-auditTrigger",
+        "Handler": "auditTrigger/index.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs6.10",
+        "Timeout": 6
+      },
+      "DependsOn": [
+        "AuditTriggerLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "AuditTriggerLambdaVersionuhJckXAEZSy31UdeLwGuTJ9YvHpqQGAKVjzCvalK00": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "AuditTriggerLambdaFunction"
+        },
+        "CodeSha256": "2+WUu4TBjMQ9TN8YHnP0JQrb65ryMq6fTgVKOCVjh+A="
       }
     },
-    "AuditLambdaPermissionEventsRuleSchedule1": {
-      "Type": "AWS::Lambda::Permission",
+    "AuditEventSourceMappingSQSAuditQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": "IamRoleLambdaExecution",
       "Properties": {
+        "BatchSize": 10,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "AuditQueue",
+            "Arn"
+          ]
+        },
         "FunctionName": {
           "Fn::GetAtt": [
             "AuditLambdaFunction",
             "Arn"
           ]
         },
-        "Action": "lambda:InvokeFunction",
-        "Principal": {
-          "Fn::Join": [
-            "",
-            [
-              "events.",
-              {
-                "Ref": "AWS::URLSuffix"
-              }
-            ]
-          ]
-        },
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "AuditEventsRuleSchedule1",
-            "Arn"
-          ]
-        }
+        "Enabled": "True"
       }
     },
     "AuditsTable": {
@@ -225,6 +261,13 @@
     },
     "ResultsBucket": {
       "Type": "AWS::S3::Bucket"
+    },
+    "AuditQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "AuditQueue",
+        "VisibilityTimeout": 60
+      }
     }
   },
   "Outputs": {
@@ -236,7 +279,13 @@
     "AuditLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AuditLambdaVersionbCaog2dBl6nrOP9p3zOEtfEQLe4mqju1ULPzYN2QfM"
+        "Ref": "AuditLambdaVersioniKBekwWxat8TnR3PxaIvdOYqj7aMBMnBe7X6opyow"
+      }
+    },
+    "AuditTriggerLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "AuditTriggerLambdaVersionuhJckXAEZSy31UdeLwGuTJ9YvHpqQGAKVjzCvalK00"
       }
     },
     "ResultsBucketName": {

@@ -44,13 +44,18 @@ resources:
   - ${file(resources/dynamodb-table.yml)}
   # S3
   - ${file(resources/s3-bucket.yml)}
+  # SQS
+  - ${file(resources/audit-queue.yml)}
 
 functions:
   audit:
     handler: audit/index.handler
     timeout: 60
     events:
-      - schedule:
-          rate: rate(1 day)
-          input:
-            target: 'https://www.bbc.com/bitesize'
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - AuditQueue
+              - Arn
+  auditTrigger:
+    handler: auditTrigger/index.handler

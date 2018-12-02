@@ -1,0 +1,6 @@
+Resources:
+    AuditQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "AuditQueue"
+        VisibilityTimeout: 60

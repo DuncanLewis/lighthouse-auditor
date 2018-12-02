@@ -1,7 +1,7 @@
 const lighthouse = require('lighthouse')
 const AWS = require('aws-sdk')
 const uuidv4 = require('uuid/v4')
-const uuidv5 = require('uuid/v5');
+const uuidv5 = require('uuid/v5')
 
 module.exports.handler = (event, context, callback, chrome) => {
     console.log(event)
@@ -65,7 +65,6 @@ module.exports.handler = (event, context, callback, chrome) => {
                 callback(null, data);
             }
         });
-    }).then(function(params) {
         ddb.putItem(params.ddb, function (err, data) {
             if (err) {  
                 console.log("Error", err);
@@ -75,5 +74,5 @@ module.exports.handler = (event, context, callback, chrome) => {
                 callback(null, data);
             }
         });
-    })
+    });
 }
