@@ -102,7 +102,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/lighthouse-auditor/dev/1543697733319-2018-12-01T20:55:33.319Z/lighthouse-auditor.zip"
+          "S3Key": "serverless/lighthouse-auditor/dev/1543710685767-2018-12-02T00:31:25.767Z/lighthouse-auditor.zip"
         },
         "FunctionName": "lighthouse-auditor-dev-audit",
         "Handler": "audit/index.handler",
@@ -121,14 +121,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "AuditLambdaVersion8BWJM3kAU34sekStYjEgKenWHOHC9qwUZFnusrlpfU": {
+    "AuditLambdaVersionbCaog2dBl6nrOP9p3zOEtfEQLe4mqju1ULPzYN2QfM": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AuditLambdaFunction"
         },
-        "CodeSha256": "lYmFE+4NEVItd+Roh+guGzQ4Am+cJ9neCrgLaRVKOnY="
+        "CodeSha256": "mbT66dkMCT7Rv0H8gTiW/abWbsiSsk6PlVXFsVJuzqo="
       }
     },
     "AuditEventsRuleSchedule1": {
@@ -236,7 +236,7 @@
     "AuditLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AuditLambdaVersion8BWJM3kAU34sekStYjEgKenWHOHC9qwUZFnusrlpfU"
+        "Ref": "AuditLambdaVersionbCaog2dBl6nrOP9p3zOEtfEQLe4mqju1ULPzYN2QfM"
       }
     },
     "ResultsBucketName": {
